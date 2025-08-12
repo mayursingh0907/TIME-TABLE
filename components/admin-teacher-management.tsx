@@ -113,8 +113,30 @@ export default function AdminTeacherManagement({
     }))
   }
 
-  const TeacherForm = () => (
-    <form onSubmit={handleSubmit} className="space-y-4">
+ 
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Teacher Management
+          </CardTitle>
+          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                Add New Teacher
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Add New Teacher</DialogTitle>
+              </DialogHeader>
+              {/* //fdjfkdjfkdfjdkfjdksfjkdsfjdskfjdskfjdskfjsdfksdjfksdjfksdfjsdkfjsdkfjsdfksdjfksdfjsdsjdfgkksdfjgsd */}
+
+ <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
           <Label htmlFor="name">Full Name</Label>
@@ -224,28 +246,9 @@ export default function AdminTeacherManagement({
         <Button type="submit">{editingTeacher ? "Update Teacher" : "Add Teacher"}</Button>
       </div>
     </form>
-  )
 
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Teacher Management
-          </CardTitle>
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Add New Teacher
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Add New Teacher</DialogTitle>
-              </DialogHeader>
-              <TeacherForm />
+               {/* //fdjfkdjfkdfjdkfjdksfjkdsfjdskfjdskfjdskfjsdfksdjfksdjfksdfjsdkfjsdkfjsdfksdjfksdfjsdsjdfgkksdfjgsd */}
+             
             </DialogContent>
           </Dialog>
         </div>
@@ -322,7 +325,116 @@ export default function AdminTeacherManagement({
             <DialogHeader>
               <DialogTitle>Edit Teacher: {editingTeacher?.name}</DialogTitle>
             </DialogHeader>
-            <TeacherForm />
+            <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="name">Full Name</Label>
+          <Input
+            id="name"
+            value={formData.name}
+            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
+            required
+          />
+        </div>
+        <div>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+            required
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="department">Department</Label>
+          <Select
+            value={formData.department}
+            onValueChange={(value) => setFormData((prev) => ({ ...prev, department: value }))}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select department" />
+            </SelectTrigger>
+            <SelectContent>
+              {departments.map((dept) => (
+                <SelectItem key={dept} value={dept}>
+                  {dept}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label htmlFor="maxHours">Max Hours per Week</Label>
+          <Input
+            id="maxHours"
+            type="number"
+            min="1"
+            max="40"
+            value={formData.maxHours}
+            onChange={(e) => setFormData((prev) => ({ ...prev, maxHours: Number.parseInt(e.target.value) }))}
+            required
+          />
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="subjects">Subjects (comma-separated)</Label>
+        <Textarea
+          id="subjects"
+          value={formData.subjects}
+          onChange={(e) => setFormData((prev) => ({ ...prev, subjects: e.target.value }))}
+          placeholder="Mathematics, Statistics, Calculus"
+          required
+        />
+      </div>
+
+      <div>
+        <Label>Availability</Label>
+        <div className="grid grid-cols-1 gap-3 mt-2">
+          {days.map((day) => (
+            <div key={day} className="border rounded-lg p-3">
+              <h4 className="font-medium mb-2">{day}</h4>
+              <div className="grid grid-cols-3 gap-2">
+                {timeSlots.map((slot) => (
+                  <div key={slot} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={`${day}-${slot}`}
+                      checked={(formData.availability[day] || []).includes(slot)}
+                      onCheckedChange={(checked) => handleAvailabilityChange(day, slot, checked as boolean)}
+                    />
+                    <Label htmlFor={`${day}-${slot}`} className="text-sm">
+                      {slot}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex justify-end space-x-2">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            if (editingTeacher) {
+              setEditingTeacher(null)
+            } else {
+              setIsAddDialogOpen(false)
+            }
+            resetForm()
+          }}
+        >
+          Cancel
+        </Button>
+        <Button type="submit">{editingTeacher ? "Update Teacher" : "Add Teacher"}</Button>
+      </div>
+    </form>
           </DialogContent>
         </Dialog>
       </CardContent>
