@@ -48,7 +48,7 @@ export default function AdminDashboard() {
   const [teachers, setTeachers] = useState<Teacher[]>([])
   const [courses, setCourses] = useState<Course[]>([])
   const [resources, setResources] = useState<Resource[]>([])
-  const [generatedTimetable, setGeneratedTimetable] = useState<any>(null)
+  const [generatedTimetable, setGeneratedTimetable] = useState<Record<string, Record<string, any[]>> | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const [isPublished, setIsPublished] = useState(false)
   const [activeTab, setActiveTab] = useState("dashboard")
@@ -173,30 +173,11 @@ export default function AdminDashboard() {
     ])
   }, [])
 
-  const generateOptimizedTimetable = useCallback(async () => {
-    // Validation checks
-    if (teachers.length === 0) {
+  const generateTimetable = useCallback(async () => {
+    if (teachers.length === 0 || courses.length === 0 || resources.length === 0) {
       toast({
-        title: "No Teachers Available",
-        description: "Please add at least one teacher before generating a timetable.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    if (courses.length === 0) {
-      toast({
-        title: "No Courses Available",
-        description: "Please add at least one course before generating a timetable.",
-        variant: "destructive",
-      })
-      return
-    }
-
-    if (resources.length === 0) {
-      toast({
-        title: "No Resources Available",
-        description: "Please add at least one resource before generating a timetable.",
+        title: "Cannot Generate Timetable",
+        description: "Please add teachers, courses, and resources first.",
         variant: "destructive",
       })
       return
@@ -205,79 +186,88 @@ export default function AdminDashboard() {
     setIsGenerating(true)
 
     try {
-      // Simulate AI processing with realistic delay
-      await new Promise((resolve) => setTimeout(resolve, 4000))
+      const timetable: Record<string, Record<string, any[]>> = {}
+      const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+      const timeSlots = ["9:00", "10:00", "11:00", "14:00", "15:00", "16:00"]
 
-      // Generate a more realistic timetable based on actual data
-      const sampleTimetable = generateRealisticTimetable()
+      // Initialize empty timetable
+      days.forEach((day) => {
+        timetable[day] = {}
+        timeSlots.forEach((slot) => {
+          timetable[day][slot] = []
+        })
+      })
 
-      setGeneratedTimetable(sampleTimetable)
+      const scheduledSessions = new Set<string>()
+
+      for (const course of courses) {
+        const teacher = teachers.find((t) => t.id === course.teacherId)
+        const availableResource = resources.find((r) => r.capacity >= course.studentCount)
+
+        if (!teacher || !availableResource) {
+          console.warn(`Skipping course ${course.name}: missing teacher or resource`)
+          continue
+        }
+
+        let sessionsScheduled = 0
+        const sessionsNeeded = course.weeklyHours
+
+        // Try to schedule sessions
+        for (const day of days) {
+          if (sessionsScheduled >= sessionsNeeded) break
+
+          const teacherAvailableSlots = teacher.availability[day] || []
+
+          for (const slot of teacherAvailableSlots) {
+            if (sessionsScheduled >= sessionsNeeded) break
+
+            const sessionKey = `${teacher.id}-${day}-${slot}`
+            const resourceKey = `${availableResource.id}-${day}-${slot}`
+
+            // Check for conflicts
+            if (!scheduledSessions.has(sessionKey) && !scheduledSessions.has(resourceKey)) {
+              timetable[day][slot].push({
+                course: course.name,
+                code: course.code,
+                teacher: teacher.name,
+                resource: availableResource.name,
+                students: course.studentCount,
+                difficulty: course.difficulty,
+                department: course.department,
+              })
+
+              scheduledSessions.add(sessionKey)
+              scheduledSessions.add(resourceKey)
+              sessionsScheduled++
+            }
+          }
+        }
+
+        if (sessionsScheduled < sessionsNeeded) {
+          toast({
+            title: "Partial Schedule",
+            description: `Could only schedule ${sessionsScheduled}/${sessionsNeeded} sessions for ${course.name}`,
+            variant: "destructive",
+          })
+        }
+      }
+
+      setGeneratedTimetable(timetable)
       toast({
-        title: "Success!",
-        description: "Timetable generated successfully using AI optimization!",
+        title: "Timetable Generated Successfully",
+        description: "AI-optimized schedule has been created with conflict resolution.",
       })
     } catch (error) {
+      console.error("Error generating timetable:", error)
       toast({
         title: "Generation Failed",
-        description: "Failed to generate timetable. Please check your data and try again.",
+        description: "Failed to generate timetable. Please try again.",
         variant: "destructive",
       })
     } finally {
       setIsGenerating(false)
     }
   }, [teachers, courses, resources, toast])
-
-  const generateRealisticTimetable = () => {
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-    const timeSlots = ["9:00", "10:00", "11:00", "14:00", "15:00", "16:00"]
-    const timetable: any = {}
-
-    days.forEach((day) => {
-      timetable[day] = {}
-      timeSlots.forEach((time) => {
-        timetable[day][time] = []
-      })
-    })
-
-    // Distribute courses across the week
-    courses.forEach((course) => {
-      const teacher = teachers.find((t) => t.id === course.teacherId)
-      const availableResource = resources.find((r) => r.capacity >= course.studentCount)
-
-      if (teacher && availableResource) {
-        let hoursScheduled = 0
-        const targetHours = course.weeklyHours
-
-        for (const day of days) {
-          if (hoursScheduled >= targetHours) break
-
-          const teacherAvailable = teacher.availability[day] || []
-          const resourceAvailable = availableResource.availability || []
-
-          for (const time of timeSlots) {
-            if (hoursScheduled >= targetHours) break
-
-            if (
-              teacherAvailable.includes(time) &&
-              resourceAvailable.includes(time) &&
-              timetable[day][time].length === 0
-            ) {
-              timetable[day][time].push({
-                course: course.name,
-                teacher: teacher.name,
-                resource: availableResource.name,
-                students: course.studentCount,
-                code: course.code,
-              })
-              hoursScheduled++
-            }
-          }
-        }
-      }
-    })
-
-    return timetable
-  }
 
   const publishTimetable = () => {
     if (!generatedTimetable) {
@@ -321,7 +311,7 @@ export default function AdminDashboard() {
     })
   }
 
-  const deleteTeacher = (id: number) => {
+  const handleDeleteTeacher = (id: number) => {
     const teacher = teachers.find((t) => t.id === id)
     const assignedCourses = courses.filter((c) => c.teacherId === id)
 
@@ -334,7 +324,7 @@ export default function AdminDashboard() {
       return
     }
 
-    setTeachers(teachers.filter((teacher) => teacher.id !== id))
+    setTeachers((prev) => prev.filter((teacher) => teacher.id !== id))
     toast({
       title: "Teacher Removed",
       description: `${teacher?.name} has been removed from the system.`,
@@ -569,7 +559,7 @@ export default function AdminDashboard() {
               teachers={teachers}
               onAddTeacher={addTeacher}
               onUpdateTeacher={updateTeacher}
-              onDeleteTeacher={deleteTeacher}
+              onDeleteTeacher={handleDeleteTeacher}
             />
           </TabsContent>
 
@@ -595,7 +585,7 @@ export default function AdminDashboard() {
           <TabsContent value="generation">
             <TimetableGenerator
               isGenerating={isGenerating}
-              onGenerate={generateOptimizedTimetable}
+              onGenerate={generateTimetable}
               generatedTimetable={generatedTimetable}
               teachers={teachers}
               courses={courses}
