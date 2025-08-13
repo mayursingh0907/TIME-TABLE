@@ -392,24 +392,24 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4 md:p-6">
+    <div className="min-h-screen bg-background p-4 md:p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
+        <div className="bg-card rounded-xl shadow-sm border p-6 mb-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-                <Shield className="h-8 w-8 text-blue-600" />
+              <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+                <Shield className="h-8 w-8 text-primary" />
                 Timetable Management System
               </h1>
-              <p className="text-gray-600 mt-2">Comprehensive academic scheduling and resource management</p>
+              <p className="text-muted-foreground mt-2">Comprehensive academic scheduling and resource management</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
-              <div className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+              <div className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-lg">
                 <strong>{teachers.length}</strong> Teachers • <strong>{courses.length}</strong> Courses •{" "}
                 <strong>{resources.length}</strong> Resources
               </div>
               {isPublished && (
-                <div className="flex items-center gap-2 text-green-600 font-medium bg-green-50 px-3 py-2 rounded-lg">
+                <div className="flex items-center gap-2 text-green-600 font-medium bg-green-50 dark:bg-green-950 px-3 py-2 rounded-lg">
                   <div className="w-2 h-2 bg-green-600 rounded-full animate-pulse"></div>
                   Timetable Published
                 </div>
@@ -419,7 +419,7 @@ export default function AdminDashboard() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-white shadow-sm">
+          <TabsList className="grid w-full grid-cols-6 bg-card shadow-sm">
             <TabsTrigger value="dashboard" className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               Dashboard
@@ -448,37 +448,37 @@ export default function AdminDashboard() {
 
           <TabsContent value="dashboard" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white rounded-xl p-6 shadow-sm border">
+              <div className="bg-card rounded-xl p-6 shadow-sm border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Teachers</p>
+                    <p className="text-sm font-medium text-muted-foreground">Total Teachers</p>
                     <p className="text-3xl font-bold text-blue-600">{teachers.length}</p>
                   </div>
                   <Users className="h-8 w-8 text-blue-600" />
                 </div>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border">
+              <div className="bg-card rounded-xl p-6 shadow-sm border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Active Courses</p>
+                    <p className="text-sm font-medium text-muted-foreground">Active Courses</p>
                     <p className="text-3xl font-bold text-green-600">{courses.length}</p>
                   </div>
                   <BookOpen className="h-8 w-8 text-green-600" />
                 </div>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border">
+              <div className="bg-card rounded-xl p-6 shadow-sm border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Available Resources</p>
+                    <p className="text-sm font-medium text-muted-foreground">Available Resources</p>
                     <p className="text-3xl font-bold text-purple-600">{resources.length}</p>
                   </div>
                   <Settings className="h-8 w-8 text-purple-600" />
                 </div>
               </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border">
+              <div className="bg-card rounded-xl p-6 shadow-sm border">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Students</p>
+                    <p className="text-sm font-medium text-muted-foreground">Total Students</p>
                     <p className="text-3xl font-bold text-orange-600">
                       {courses.reduce((sum, course) => sum + course.studentCount, 0)}
                     </p>
@@ -489,8 +489,8 @@ export default function AdminDashboard() {
             </div>
 
             {/* Quick Actions */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border">
-              <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+            <div className="bg-card rounded-xl p-6 shadow-sm border">
+              <h3 className="text-lg font-semibold mb-4 text-foreground">Quick Actions</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Button onClick={() => setActiveTab("teachers")} variant="outline" className="h-20 flex flex-col gap-2">
                   <Users className="h-6 w-6" />
@@ -502,7 +502,7 @@ export default function AdminDashboard() {
                 </Button>
                 <Button
                   onClick={() => setActiveTab("generation")}
-                  className="h-20 flex flex-col gap-2 bg-blue-600 hover:bg-blue-700"
+                  className="h-20 flex flex-col gap-2 bg-primary hover:bg-primary/90"
                 >
                   <RefreshCw className="h-6 w-6" />
                   Generate Timetable
@@ -511,8 +511,8 @@ export default function AdminDashboard() {
             </div>
 
             {/* System Status */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border">
-              <h3 className="text-lg font-semibold mb-4">System Status</h3>
+            <div className="bg-card rounded-xl p-6 shadow-sm border">
+              <h3 className="text-lg font-semibold mb-4 text-foreground">System Status</h3>
               <div className="space-y-3">
                 {teachers.length === 0 && (
                   <Alert>
@@ -594,11 +594,11 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="publishing" className="space-y-6">
-            <div className="bg-white rounded-xl p-6 shadow-sm border">
+            <div className="bg-card rounded-xl p-6 shadow-sm border">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-800">Publishing & Distribution</h3>
-                  <p className="text-gray-600 mt-1">Share timetable with users and stakeholders</p>
+                  <h3 className="text-xl font-medium text-foreground">Publishing & Distribution</h3>
+                  <p className="text-muted-foreground mt-1">Share timetable with users and stakeholders</p>
                 </div>
               </div>
 
@@ -607,7 +607,7 @@ export default function AdminDashboard() {
                   <div className="flex items-center space-x-4">
                     <Button
                       onClick={publishTimetable}
-                      className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                      className="flex items-center gap-2 bg-primary hover:bg-primary/90"
                       disabled={isPublished}
                     >
                       <Send className="h-4 w-4" />
@@ -622,16 +622,18 @@ export default function AdminDashboard() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                    <div className="border rounded-lg p-4">
-                      <h4 className="font-medium mb-2">Email Notifications</h4>
-                      <p className="text-sm text-gray-600 mb-3">Send timetable updates to all teachers and students</p>
+                    <div className="border rounded-lg p-4 bg-card">
+                      <h4 className="font-medium mb-2 text-foreground">Email Notifications</h4>
+                      <p className="text-sm text-muted-foreground mb-3">
+                        Send timetable updates to all teachers and students
+                      </p>
                       <Button variant="outline" size="sm" disabled={!isPublished}>
                         Send Emails
                       </Button>
                     </div>
-                    <div className="border rounded-lg p-4">
-                      <h4 className="font-medium mb-2">Export Options</h4>
-                      <p className="text-sm text-gray-600 mb-3">Download timetable in various formats</p>
+                    <div className="border rounded-lg p-4 bg-card">
+                      <h4 className="font-medium mb-2 text-foreground">Export Options</h4>
+                      <p className="text-sm text-muted-foreground mb-3">Download timetable in various formats</p>
                       <div className="space-y-2">
                         <Button variant="outline" size="sm" className="w-full bg-transparent" disabled={!isPublished}>
                           Export as PDF
@@ -641,9 +643,9 @@ export default function AdminDashboard() {
                         </Button>
                       </div>
                     </div>
-                    <div className="border rounded-lg p-4">
-                      <h4 className="font-medium mb-2">Mobile App</h4>
-                      <p className="text-sm text-gray-600 mb-3">Sync with mobile applications</p>
+                    <div className="border rounded-lg p-4 bg-card">
+                      <h4 className="font-medium mb-2 text-foreground">Mobile App</h4>
+                      <p className="text-sm text-muted-foreground mb-3">Sync with mobile applications</p>
                       <Button variant="outline" size="sm" disabled={!isPublished}>
                         Sync to Mobile
                       </Button>
@@ -651,9 +653,9 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-12 text-gray-500">
-                  <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                  <h4 className="text-lg font-medium mb-2">No Timetable Generated</h4>
+                <div className="text-center py-12 text-muted-foreground">
+                  <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                  <h4 className="text-lg font-medium mb-2 text-foreground">No Timetable Generated</h4>
                   <p className="mb-4">Generate a timetable first to enable publishing options.</p>
                   <Button onClick={() => setActiveTab("generation")}>Go to Generation</Button>
                 </div>
